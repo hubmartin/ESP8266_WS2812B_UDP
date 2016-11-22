@@ -2,40 +2,100 @@
 
 // import UDP library
 import hypermedia.net.*;
+import mqtt.*;
+
+
+public class NetworkDevice
+{
+   public String ip;
+   public int ledCount;
+   public PVector positionOffset;
+   public PVector positionIncrement;
+   
+   public NetworkDevice(String ip, int ledCount, int y)
+   {
+     this.ip = ip;
+     this.ledCount = ledCount;
+     this.positionOffset = new PVector(0,y);
+     this.positionIncrement = new PVector(2,0);
+   }
+}
+
+ArrayList<NetworkDevice> deviceList = new ArrayList<NetworkDevice>();
 
 
 UDP udp;  // define the UDP object
-    String ip       = "192.168.100.106";  // the remote IP address
-    int port        = 8000;    // the destination port
+int port        = 8000;    // the destination port
     
-    
+MQTTClient client;
+
+void mouseDragged()
+{
+  NetworkDevice device = deviceList.get(1);
+  device.positionOffset.x = mouseX;
+  device.positionOffset.y = mouseY;
+}
     
 void udpInit()
 {
-    udp = new UDP( this, 6000 );
-  //udp.log( true );     // <-- printout the connection activity
-  udp.listen( true );
+  udp = new UDP( this );
+  //udp.listen( true );
+  
+  deviceList.add(new NetworkDevice("192.168.100.106", 267,0));
+  deviceList.add(new NetworkDevice("192.168.100.107", 216,5));
+  
+  client = new MQTTClient(this);
+  client.connect("mqtt://192.168.100.131", "processing");
+  client.subscribe("/effect/#");
+  
+}
+
+void messageReceived(String topic, byte[] payload) {
+  
+  if(topic.equals("/effect/next")) //<>//
+    effectNext();
+    
+  if(topic.equals("/effect/prev"))
+    effectPrev();
+    
+  if(topic.equals("/effect/set"))
+  {
+    effectSet(Integer.parseInt(new String(payload)));
+  }
+  
+  if(topic.equals("/effect/rgb"))
+  {
+    colorSet(unhex((new String(payload)).replace("#","")));
+  }
+    
+  println("new message: ." + topic + ". - " + new String(payload));
 }
     
 void udpSend()
 {
-  color pix[] = new color[267];
+  
+    for(NetworkDevice device : deviceList)
+{
+  
+  color pix[] = new color[device.ledCount];
    
   for(int i = 0; i < pix.length; i++)
   {
       //pix[i] = pixels[i * 5];
-      int x = 1 * i;
-      int y = 0;
-      pix[i] = get(x, y);
+      float x = device.positionOffset.x + device.positionIncrement.x * i;
+      float y = device.positionOffset.y + device.positionIncrement.y * i;
+      pix[i] = get((int)x, (int)y);
       //noFill();
-      //ellipse(x, y, 2, 2);
+      ellipse(x, y + 10, 2, 2);
   }
   
-  sendData(pix);
+  sendData(device, pix);
+  
+  }
   
 }
 
-void sendData(color[] dataPixels)
+void sendData(NetworkDevice device, color[] dataPixels)
 {
   
   
@@ -59,7 +119,7 @@ void sendData(color[] dataPixels)
   System.arraycopy(header, 0, byteSend, 0, header.length);
   System.arraycopy(data, 0, byteSend, header.length, data.length);
   
-  udp.send( byteSend, ip, port );
+    udp.send( byteSend, device.ip , port );
 }
 
 /**

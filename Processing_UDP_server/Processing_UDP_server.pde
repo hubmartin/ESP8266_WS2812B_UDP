@@ -14,6 +14,7 @@ void setup() {
   plasmaSetup();
   dotsInit();
   udpInit();
+  
 }
 
 int effect = 0;
@@ -30,8 +31,53 @@ void draw() {
     dotsDraw();
     break;
     
+    case 2:
+    background(0);
+    break;
+    
+    case 3:
+    background(255);
+    break;
+    
+    case 4:
+    background(255,0,0);
+    break;
+    
+    case 5:
+    background(0,255,0);
+    break;
+    
+    case 6:
+    background(0,0,255);
+    break;
+    
+    case 7:
+    // selected color
+    break;
+    
   }
   udpSend();
+}
+
+void colorSet(color c)
+{
+  effect = 7;
+  background(c);
+}
+
+void effectNext()
+{
+ effect++; 
+}
+
+void effectPrev()
+{
+  effect--;
+}
+
+void effectSet(int i)
+{
+  effect = i;
 }
 
 void keyPressed()

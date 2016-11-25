@@ -12,7 +12,7 @@ UDP packet has simple format:
 
 ESP8266 desitnation port is 8000
 
-[![Video in action](https://raw.githubusercontent.com/hubmartin/ESP8266_WS2812B_UDP/master/doc/img/video.jpg)](https://www.youtube.com/watch?v=6YXG2YobrUo "Video Title")
+[![Video in action](https://raw.githubusercontent.com/hubmartin/ESP8266_WS2812B_UDP/master/doc/img/video.jpg)](https://youtu.be/okA8Il88aNk "Video Title")
 
 [Video in action]()
 

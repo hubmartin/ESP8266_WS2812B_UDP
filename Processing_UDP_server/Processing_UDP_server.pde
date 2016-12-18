@@ -17,7 +17,7 @@ void setup() {
   
 }
 
-int effect = 0;
+int effect = 1;
 
 //process events
 void draw() {

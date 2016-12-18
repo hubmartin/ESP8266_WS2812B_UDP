@@ -41,8 +41,9 @@ void udpInit()
   udp = new UDP( this );
   //udp.listen( true );
   
-  deviceList.add(new NetworkDevice("192.168.100.106", 267,0));
-  deviceList.add(new NetworkDevice("192.168.100.107", 216,5));
+  deviceList.add(new NetworkDevice("192.168.100.110", 267,0)); // obyvak
+  deviceList.add(new NetworkDevice("192.168.100.111", 216,5)); // jidelna  
+   deviceList.add(new NetworkDevice("192.168.100.100", 216,5)); // sklep test
   
   client = new MQTTClient(this);
   client.connect("mqtt://192.168.100.131", "processing");

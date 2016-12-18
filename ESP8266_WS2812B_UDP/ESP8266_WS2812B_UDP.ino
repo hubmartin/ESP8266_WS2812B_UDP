@@ -2,8 +2,12 @@
 
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-
 #include <Adafruit_NeoPixel.h>
+
+#include <ArduinoOTA.h>
+
+// Create your config file with WIFI_SSID and WIFI_PASS
+#include "config.h"
 
 //#include <OneWire.h>
 //#include <DallasTemperature.h>
@@ -12,10 +16,19 @@
 
 uint32_t actColor = 0x22222222;
 
-const char* ssid = "Internet";
-const char* password = "heslojeheslo";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASS;
 
-#define PIN            D7
+#define BTN_DEBUG D1
+
+#define LED_BLUE 2
+#define LED_RED LED_BUILTIN
+
+#ifndef D7
+  #define D7 0
+#endif
+
+#define PIN            D6
 #define NUMPIXELS     144*3
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -24,43 +37,83 @@ unsigned int localUdpPort = 8000;
 char udpInPacket[2048];
 char  replyPacket[] = "Hi there! Got the message :-)";
 
-void setup() {
-  Serial.begin(115200);
-  delay(10);
 
-  // prepare GPIO2
-  pinMode(2, OUTPUT);
-  digitalWrite(2, 0);
+void WIFI_Connect()
+{
+  digitalWrite(LED_RED, LOW);
+  WiFi.disconnect();
   
-  // Connect to WiFi network
+// Connect to WiFi network
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
-  
+
+  //WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+    // Wait for connection
+  for (int i = 0; i < 25; i++)
+  {
+    if ( WiFi.status() != WL_CONNECTED ) {
+      delay ( 250 );
+      digitalWrite(LED_RED, LOW);
+      Serial.print ( "." );
+      delay ( 250 );
+      digitalWrite(LED_RED, HIGH);
+    }
   }
+  digitalWrite(LED_RED, HIGH);
+
   Serial.println("");
   Serial.println("WiFi connected");
-
-
-  // Print the IP address
+// Print the IP address
   Serial.println(WiFi.localIP());
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  // prepare GPIO2
+  pinMode(LED_BLUE, OUTPUT);
+  digitalWrite(LED_BLUE, LOW);
+  
+  WIFI_Connect();
+
+  digitalWrite(LED_BLUE, HIGH);
+  
 
   Udp.begin(localUdpPort);
 
+  ArduinoOTA.begin();
+
   pixels.begin();
+
+  
+  pinMode ( BTN_DEBUG, INPUT_PULLUP );
 }
 
 int fpsCounter = 0;
 int secondTimer = 0;
 
+int redLedTimer = 0;
+
 void loop() {
 
+  if(digitalRead(BTN_DEBUG) == LOW)
+  {
+    Serial.println("Btn disconnect");
+    WiFi.disconnect();
+  }
+  
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    WIFI_Connect();
+  }
+
+  ArduinoOTA.handle();
 
   int packetSize = Udp.parsePacket();
   
@@ -75,7 +128,8 @@ void loop() {
       int inNumPixels;
       inNumPixels  = udpInPacket[1] << 8;
       inNumPixels |= udpInPacket[2];
-      Serial.printf("Set color command, numpixels %d\n", inNumPixels);
+      //Serial.printf("SetCmd numPix:%d\n", inNumPixels);
+      Serial.print("/");
 
       pixels.updateLength(inNumPixels);
 
@@ -108,9 +162,24 @@ void loop() {
   {
     secondTimer = millis();
 
+    // Blink red led if packets are comming
+    if(fpsCounter > 0)
+    {
+      digitalWrite(LED_RED, LOW);
+      redLedTimer = secondTimer;
+    }
+
     Serial.printf("FPS: %d\n", fpsCounter);
     fpsCounter = 0;
   }
+
+  // Turn RED LED off after few ms
+  if(redLedTimer && millis() - redLedTimer >= 2)
+  {
+    redLedTimer = 0;
+    digitalWrite(LED_RED, HIGH);
+  }
+  
 
 }
 

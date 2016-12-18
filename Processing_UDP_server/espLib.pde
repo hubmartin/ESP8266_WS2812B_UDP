@@ -40,7 +40,7 @@ void udpInit()
 {
   udp = new UDP( this );
   //udp.listen( true );
-  
+ 
   deviceList.add(new NetworkDevice("192.168.100.110", 267,0)); // obyvak
   deviceList.add(new NetworkDevice("192.168.100.111", 216,5)); // jidelna  
    deviceList.add(new NetworkDevice("192.168.100.100", 216,5)); // sklep test
@@ -53,7 +53,7 @@ void udpInit()
 
 void messageReceived(String topic, byte[] payload) {
   
-  if(topic.equals("/effect/next")) //<>//
+  if(topic.equals("/effect/next")) //<>// //<>//
     effectNext();
     
   if(topic.equals("/effect/prev"))

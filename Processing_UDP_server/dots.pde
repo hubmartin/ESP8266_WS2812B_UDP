@@ -11,12 +11,14 @@ void dotsInit()
 void dotsDraw()
 {
   loadPixels();
-  for (int pixelCount = 0; pixelCount < width*height; pixelCount++)
+  
+  for (int pixelCount = 0; pixelCount < width; pixelCount++)
   {                    
     float b = brightness(pixels[pixelCount]);
     b -= b * 0.01;
     pixels[pixelCount] =  color(b,b,b);
   }
+  
   
   /*int i = (int)random(0,width);
   pixels[i] =  color(255,255,255);*/

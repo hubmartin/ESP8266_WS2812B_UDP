@@ -32,7 +32,8 @@ void draw() {
     break;
     
     case 2:
-    background(0);
+    //background(0);
+    dotsDrawColor();
     break;
     
     case 3:

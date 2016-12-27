@@ -1,0 +1,8 @@
+<config defaultEffect="2">
+
+    <mqtt address="mqtt://192.168.100.131" name="processing" />
+    
+    <devices>
+        <device address="192.168.100.108" length="216" x="0" y="0" />
+    </devices>
+</config>

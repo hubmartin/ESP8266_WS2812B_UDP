@@ -12,80 +12,45 @@
 
 */
 
+
+//
+// Add new effect here, then add their string name to the <effects> element in data/config.xml
+//
+Effect[] effect = { new EffectPlasma(), new EffectDots() };
+
+
+EffectManager em;
+
 void setup() {
   
   // solve error libgles2-mesa
   // failed to open swrast
   // EGLGLXDrawableFactory
   size(900, 200, P2D);
-  plasmaSetup();
-  dotsInit();
-  udpInit();
+    
+  // Init ESP UDP streaming
+  espLibInit();
+  
+  em = new EffectManager(effect);
+  
+  em.init();
   
 }
 
-int effect = 0;
+int actualEffect = 0;
 
 //process events
 void draw() {
-  switch(effect)
-  {
-   case 0: 
-    plasmaDraw();
-    break;
-    
-    case 1:
-    dotsDraw();
-    break;
-    
-    case 2:
-    dotsDrawColor();
-    break;
-    
-    case 3:
-    background(255);
-    break;
-    
-    case 4:
-    background(255,0,0);
-    break;
-    
-    case 5:
-    background(0,255,0);
-    break;
-    
-    case 6:
-    background(0,0,255);
-    break;
-    
-    case 7:
-    // selected color
-    break;
-    
-  }
-  udpSend();
+  
+  em.draw();
+
+  espLibSend();
 }
 
 void colorSet(color c)
 {
-  effect = 7;
+  actualEffect = 7;
   background(c);
-}
-
-void effectNext()
-{
-  effectSet(effect + 1);
-}
-
-void effectPrev()
-{
-  effectSet(effect - 1);
-}
-
-void effectSet(int i)
-{
-  effect = i;
-  println("Selected effect: " + effect);
 }
 
 void keyPressed()
@@ -94,12 +59,12 @@ void keyPressed()
  {
     case '+':
     case 'a':
-    effectNext();
+    em.next();
     break;
     
     case '-':
     case 's':
-    effectPrev();
+    em.prev();
     break;
  }
  

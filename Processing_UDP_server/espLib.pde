@@ -41,7 +41,7 @@ void loadConfig()
   XML xml = loadXML("config.xml");
   
 
-  effectSet(xml.getInt("defaultEffect"));
+  //effectSet(xml.getInt("defaultEffect"));
   println("def eff:" + xml.getInt("defaultEffect"));
   
   XML[] mqtt = xml.getChildren("mqtt");
@@ -64,7 +64,7 @@ void loadConfig()
 }
   
     
-void udpInit()
+void espLibInit()
 {
   udp = new UDP( this );
   mqttClient = new MQTTClient(this);
@@ -75,14 +75,14 @@ void udpInit()
 void messageReceived(String topic, byte[] payload) {
   
   if(topic.equals("/effect/next")) //<>//
-    effectNext();
+    em.next();
     
   if(topic.equals("/effect/prev"))
-    effectPrev();
+    em.prev();
     
   if(topic.equals("/effect/set"))
   {
-    effectSet(Integer.parseInt(new String(payload)));
+    em.set(Integer.parseInt(new String(payload)));
   }
   
   if(topic.equals("/effect/rgb"))
@@ -93,7 +93,7 @@ void messageReceived(String topic, byte[] payload) {
   println("new message: ." + topic + ". - " + new String(payload));
 }
     
-void udpSend()
+void espLibSend()
 {
   
   for(NetworkDevice device : deviceList)

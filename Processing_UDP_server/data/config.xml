@@ -3,16 +3,16 @@
     <mqtt address="mqtt://192.168.100.131" name="processing" />
     
     <devices>
-        <device address="192.168.100.108" length="216" x="0" y="0" />
+        <device address="192.168.100.101" length="216" x="0" y="0" />
     </devices>
     
     <!-- This is some kind of "playlist" where you can make list of your
         favourite effect, each effect element can have different parameters.
         That way you can have one effect with different settings -->
     <effects>
-        <effect name="plasma" />
-        <effect name="dots" mode="bw"/>
         <effect name="dots" mode="color"/>
+        <effect name="dots" mode="bw"/>
+        <effect name="soundLevel" />
         <effect name="plasma" />
     </effects>
 </config>

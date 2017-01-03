@@ -16,10 +16,14 @@
 //
 // Add new effect here, then add their string name to the <effects> element in data/config.xml
 //
-Effect[] effect = { new EffectPlasma(), new EffectDots() };
+Effect[] effect = { new EffectPlasma(), new EffectDots(), new EffectSoundLevel() };
 
 
 EffectManager em;
+
+
+
+
 
 void setup() {
   
@@ -27,6 +31,8 @@ void setup() {
   // failed to open swrast
   // EGLGLXDrawableFactory
   size(900, 200, P2D);
+  
+  frameRate(25);
     
   // Init ESP UDP streaming
   espLibInit();
@@ -35,6 +41,7 @@ void setup() {
   
   em.init();
   
+ 
 }
 
 int actualEffect = 0;
@@ -45,7 +52,27 @@ void draw() {
   em.draw();
 
   espLibSend();
+  
+    //background(0);
+  // draw the waveforms
+  /*
+  for(int i = 0; i < in.bufferSize() - 1; i++)
+  {
+    stroke((1+in.left.get(i))*50,100,100);
+    line(i, 50 + in.left.get(i)*50, i+1, 50 + in.left.get(i+1)*50);
+    stroke(white);
+    line(i, 150 + in.right.get(i)*50, i+1, 150 + in.right.get(i+1)*50);
+  }*/
+  
+  
+  
+  
+  //println(in.getGain());  
 }
+
+
+
+
 
 void colorSet(color c)
 {

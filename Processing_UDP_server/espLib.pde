@@ -96,6 +96,7 @@ void messageReceived(String topic, byte[] payload) {
 void espLibSend()
 {
   
+  
   for(NetworkDevice device : deviceList)
   {
   
